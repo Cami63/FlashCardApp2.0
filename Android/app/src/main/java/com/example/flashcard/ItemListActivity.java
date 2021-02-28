@@ -85,7 +85,7 @@ public class ItemListActivity extends AppCompatActivity {
                 JSONObject jsonData = new JSONObject(response);
                 JSONArray jsonSets = jsonData.getJSONArray("sets");
                 for (int i = 0; i < jsonSets.length(); ++i) {
-                    JSONArray jsonSet = jsonSets.getJSONArray(0);
+                    JSONArray jsonSet = jsonSets.getJSONArray(i);
                     mSets.add(new FlashcardSetContent.FlashcardSet(jsonSet.getString(0), jsonSet.getString(1)));
                 }
                 mAdapter.notifyDataSetChanged();
