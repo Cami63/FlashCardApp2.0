@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
 
+import com.android.volley.Response;
+import com.example.flashcard.api.ApiConnector;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -17,8 +19,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.flashcard.dummy.FlashcardSetContent;
+import com.example.flashcard.models.FlashcardSetContent;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,6 +43,9 @@ public class ItemListActivity extends AppCompatActivity {
      * device.
      */
     private boolean mTwoPane;
+
+    private List< FlashcardSetContent.FlashcardSet > mSets;
+    private SimpleItemRecyclerViewAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,11 +75,30 @@ public class ItemListActivity extends AppCompatActivity {
 
         View recyclerView = findViewById(R.id.item_list);
         assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+
+        mSets = new ArrayList<>();
+
+        mAdapter = setupRecyclerView((RecyclerView) recyclerView, mSets);
+
+        ApiConnector.getSets(this.getBaseContext(), response -> {
+            try {
+                JSONObject jsonData = new JSONObject(response);
+                JSONArray jsonSets = jsonData.getJSONArray("sets");
+                for (int i = 0; i < jsonSets.length(); ++i) {
+                    JSONArray jsonSet = jsonSets.getJSONArray(i);
+                    mSets.add(new FlashcardSetContent.FlashcardSet(jsonSet.getString(0), jsonSet.getString(1)));
+                }
+                mAdapter.notifyDataSetChanged();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, FlashcardSetContent.ITEMS, mTwoPane));
+    private SimpleItemRecyclerViewAdapter setupRecyclerView(@NonNull RecyclerView recyclerView, List< FlashcardSetContent.FlashcardSet > sets) {
+        SimpleItemRecyclerViewAdapter adapter = new SimpleItemRecyclerViewAdapter(this, sets, mTwoPane);
+        recyclerView.setAdapter(adapter);
+        return adapter;
     }
 
     public static class SimpleItemRecyclerViewAdapter

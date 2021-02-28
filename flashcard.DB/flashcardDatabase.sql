@@ -3,32 +3,32 @@ USE flash;
 CREATE TABLE sets (
     id BIGINT NOT NULL AUTO_INCREMENT,
     setName VARCHAR(255) NOT NULL,
-    PRIMARY KEY (setId)
+    PRIMARY KEY (id)
 );
 CREATE TABLE cards (
     id BIGINT NOT NULL AUTO_INCREMENT,
     cardFront VARCHAR(255) NOT NULL,
     cardBack VARCHAR(255) NOT NULL,
     setId BIGINT NOT NULL,
-    PRIMARY KEY id
+    PRIMARY KEY (id),
     CONSTRAINT setId_fk FOREIGN KEY (setId) REFERENCES flash.sets (id)
 );
-CREATE TABLE right (
+CREATE TABLE correct (
     id BIGINT NOT NULL AUTO_INCREMENT,
     dateTime TIMESTAMP NOT NULL,
     cardId BIGINT NOT NULL,
-    PRIMARY KEY id,
-    CONSTRAINT cardId_fk FOREIGN KEY (cardId) REFERENCES flash.cards (id)
+    PRIMARY KEY (id),
+    CONSTRAINT cardId_correct_fk FOREIGN KEY (cardId) REFERENCES flash.cards (id)
 );
 CREATE TABLE wrong (
     id BIGINT NOT NULL AUTO_INCREMENT,
     dateTime TIMESTAMP NOT NULL,
     cardId BIGINT NOT NULL,
-    PRIMARY KEY id,
-    CONSTRAINT cardId_fk FOREING KEY (cardId) REFERENCES flash.cards (id)
+    PRIMARY KEY (id),
+    CONSTRAINT cardId_wrong_fk FOREIGN KEY (cardId) REFERENCES flash.cards (id)
 );
 
-DELIMITER$$
+DELIMITER $$
 CREATE PROCEDURE flash.addSet (
     setNam VARCHAR(255)
 )
@@ -68,9 +68,7 @@ CREATE PROCEDURE flash.searchDecks (
 BEGIN
     SELECT se.id, se.setName
     FROM sets AS se
-
-    
-    WHERE se.setName LIKE CONCAT('%', keyword, '%')
+    WHERE se.setName LIKE CONCAT('%', keyword, '%');
 END$$
 CREATE PROCEDURE flash.selectPracticeSet (
     setI BIGINT
@@ -117,4 +115,4 @@ BEGIN
 			ON cte2.cardid = car.id
     GROUP BY car.setId;
 END$$
-DELIMITER;
+DELIMITER ;

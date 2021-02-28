@@ -6,6 +6,10 @@ app = Flask("flashcard-api")
 cors = CORS(app)
 app.config["CORS_HEADERS"] = 'Content-Type'
 
+def getnewcursor ():
+    db = mysql.connector.connect(host="localhost", user="root", database="flash", password="Camiscode6363!", pool_name="flashPool", pool_size=4, auth_plugin="mysql_native_password")
+    return db.cursor(), db
+
 def executeandclose(sql, params = None) :
     cursor, db = getnewcursor()
     result = cursor.execute(sql, params, multi=True)
@@ -45,3 +49,15 @@ def search_decks():
 @cross_origin()
 def add_set():
     data = request.json
+
+
+@app.route('/sets', methods = ['GET'])
+@cross_origin()
+def get_sets():
+    return {
+        "sets": executeandclose("SELECT id, setName FROM flash.sets;")
+    }
+
+
+if __name__ == "__main__":
+    app.run(port=5000)
