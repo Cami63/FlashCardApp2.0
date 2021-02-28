@@ -14,7 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.example.flashcard.dummy.FlashcardSetContent;
+import com.example.flashcard.models.FlashcardSetContent;
 
 /**
  * A fragment representing a single Item detail screen.

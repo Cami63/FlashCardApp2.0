@@ -1,4 +1,4 @@
-package com.example.flashcard.dummy;
+package com.example.flashcard.models;
 
 import java.util.ArrayList;
 import java.util.HashMap;

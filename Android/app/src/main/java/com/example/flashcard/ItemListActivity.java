@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
 
+import com.android.volley.Response;
+import com.example.flashcard.api.ApiConnector;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -17,8 +19,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.flashcard.dummy.FlashcardSetContent;
+import com.example.flashcard.models.FlashcardSetContent;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -65,11 +72,25 @@ public class ItemListActivity extends AppCompatActivity {
 
         View recyclerView = findViewById(R.id.item_list);
         assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+
+        ApiConnector.getSets(this.getBaseContext(), response -> {
+            try {
+                List<FlashcardSetContent.FlashcardSet> sets = new ArrayList<>();
+                JSONObject jsonData = new JSONObject(response);
+                JSONArray jsonSets = jsonData.getJSONArray("sets");
+                for (int i = 0; i < jsonSets.length(); ++i) {
+                    JSONArray jsonSet = jsonSets.getJSONArray(0);
+                    sets.add(new FlashcardSetContent.FlashcardSet(jsonSet.getString(0), jsonSet.getString(1)));
+                }
+                setupRecyclerView((RecyclerView) recyclerView, sets);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, FlashcardSetContent.ITEMS, mTwoPane));
+    private void setupRecyclerView(@NonNull RecyclerView recyclerView, List< FlashcardSetContent.FlashcardSet > sets) {
+        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, sets, mTwoPane));
     }
 
     public static class SimpleItemRecyclerViewAdapter
