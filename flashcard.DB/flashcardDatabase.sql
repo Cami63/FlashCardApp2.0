@@ -73,19 +73,19 @@ BEGIN
     WHERE se.setName LIKE CONCAT('%', keyword, '%')
 END$$
 CREATE PROCEDURE flash.selectPracticeSet (
-    setI BIGINT,
+    setI BIGINT
 )
 BEGIN
     WITH cte1 AS
     (
         (SELECT car.id, car.cardFront, car.cardBack, HOUR(TIMEDIFF(NOW(), cor.dateTime)) AS x, 1 AS correct
-        FROM cards AS car
-            RIGHT JOIN correct AS cor
+        FROM correct AS cor
+            RIGHT JOIN cards AS car
                 ON cor.cardId = car.id AND car.setId = setI)
         UNION
         (SELECT car.id, car.cardFront, car.cardBack, HOUR(TIMEDIFF(NOW(), cor.dateTime)) AS x, -1 AS correct
-        FROM cards AS car
-            RIGHT JOIN wrong AS wr
+        FROM wrong AS wr
+            RIGHT JOIN cards AS car
                 ON wr.cardId = car.id AND car.setId = setI)
     )
     SELECT SUM(correct*(CASE
@@ -100,5 +100,21 @@ BEGIN
     GROUP BY cte1.id
     ORDER BY points ASC
     LIMIT 10;
+END$$
+CREATE PROCEDURE flash.getPracticedSets ()
+BEGIN
+    WITH cte2 AS
+	(
+		(SELECT cor.cardId AS cardid
+			FROM correct AS cor)
+		UNION 
+		(SELECT wr.cardId AS cardid
+			FROM wrong AS wr)
+    )
+    SELECT car.setId
+    FROM cte2
+        JOIN cards AS car
+			ON cte2.cardid = car.id
+    GROUP BY car.setId;
 END$$
 DELIMITER;
