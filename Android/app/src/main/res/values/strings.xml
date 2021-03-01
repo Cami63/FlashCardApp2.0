@@ -1,6 +1,3 @@
 <resources>
-    <string name="app_name">flashcard</string>
-    <string name="title_item_detail">Item Detail</string>
-    <string name="app_continue_label">Practice Set</string>
-    <string name="app_search_label">Search Sets</string>
+    <string name="app_name">My Application</string>
 </resources>

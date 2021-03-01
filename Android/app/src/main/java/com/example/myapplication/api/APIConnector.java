@@ -1,4 +1,4 @@
-package com.example.flashcard.api;
+package com.example.myapplication.api;
 
 import android.content.Context;
 import android.util.Log;
@@ -9,7 +9,7 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-public class ApiConnector {
+public class APIConnector {
     public static void getSets(Context ctx, Response.Listener<String> listener){
         RequestQueue queue = Volley.newRequestQueue(ctx);
 
